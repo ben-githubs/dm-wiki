@@ -121,7 +121,7 @@ def new_page(userid, project):
     form = forms.Page()
     if form.validate_on_submit():
         # Validate and alter the body text
-        text = sanitize_links(project, form.text.data)
+        text = sanitize_text(project, form.text.data)
         print(text)
         # Create page
         page = create_page(
@@ -145,25 +145,31 @@ def new_page(userid, project):
         title='Create New Page'
     )
 
-@main_bp.route('/content/edit/<title>', methods=['GET', 'POST'])
-def edit_page(title):
-    form = forms.Page()
-    page = m.Page.query.get(title)
+@login_required
+@main_bp.route('/content/edit/<id>', methods=['GET', 'POST'])
+def edit_page(id):
+    form = forms.PageEdit()
+    page = m.Page.query.get(id)
     # Redirect if no page found
     if not page:
-        return render_template('404.html')
+        return abort(404)
+    # Make sure the user is allowed to access this page
+    if page.owner_id != current_user.id:
+        return abort(403)
     if form.validate_on_submit():
         # Alter Page
-        title = form.data['title']
-        page.content = form.data['content']
+        project = m.Project.query.get(page.project_id)
+        page.title = form.title.data
+        page.public = form.public.data
+        page.text = sanitize_text(project, form.text.data)
         db.session.commit()
-        return redirect(url_for('main_bp.show_page', title=page.title))
-    form.from_obj(vars(page))
+        return redirect(url_for('main_bp.show_page_by_id', id=id))
+    form.from_obj(page)
     return render_template(
         'edit_page.html',
         form = form,
-        title = f'Editing {title}',
-        p_title = title
+        title = f'Editing {page.title}',
+        page = page
     )
 
 @main_bp.route('/<int:userid>/<project_name>/show/<path:path>', methods=['GET'])
@@ -178,8 +184,8 @@ def show_page(userid, project_name, path):
     set_project(project)
     print(path)
     page = get_page_by_abs_path(project, path)
-    # Display error if page not found
-    if not page:
+    # Display error if page not found or is private and we're not the owner
+    if not page or (not page.public and current_user.id != page.owner_id):
         return abort(404)
     return render_template('page_show.html',
         title=page.title,
@@ -253,7 +259,7 @@ def set_project(p):
 '''
 Accepts Markdown text and looks for link targets starting with "page:", then converts them to links starting with "id:".
 '''
-def sanitize_links(project, text):
+def sanitize_text(project, text):
     def replace(match):
         assert len(match.groups()) > 0
         arg = match.group(1)

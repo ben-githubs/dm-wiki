@@ -91,7 +91,7 @@ def get_path_from_id(page_id):
     project = Project.query.filter_by(page_id = page.id).first()
     path.insert(0, title_to_url(page.title))
     assert project, f"Page <{page.id}> has no project!"
-    return title_to_url(project.title), '/'.join(path)
+    return title_to_url(project.title), '/'.join(path[1:]) # path[0] is project name
 
 
 

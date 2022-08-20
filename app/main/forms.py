@@ -7,15 +7,8 @@ choices_yes_no = {
     False: (0, 'No')
 }
 
-class Page(FlaskForm):
-    """Create a new page, with content and everything."""
-    path = StringField(
-        "Where should this article be located?",
-        validators = [
-            DataRequired(),
-            Regexp(r"^[A-Za-z\d$-.+!*'(), \/]+$", message="Use only letters, numbers, spaces, and the following sympols: A-Za-z\d$-.+!*'(),/")
-        ]
-    )
+class PageEdit(FlaskForm):
+    
     title = StringField(
         "What should the title of your article be?",
         validators = [
@@ -40,6 +33,16 @@ class Page(FlaskForm):
         self.title.data = page.title
         self.public.data = choices_yes_no.get(page.public)
         self.text.data = page.text
+
+class Page(PageEdit):
+    """Create a new page, with content and everything."""
+    path = StringField(
+        "Where should this article be located?",
+        validators = [
+            DataRequired(),
+            Regexp(r"^[A-Za-z\d$-.+!*'(), \/]+$", message="Use only letters, numbers, spaces, and the following sympols: A-Za-z\d$-.+!*'(),/")
+        ]
+    )
 
 class Project(FlaskForm):
     """ Create a new project, in which to create pages. """

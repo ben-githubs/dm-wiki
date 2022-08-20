@@ -3,26 +3,45 @@
 {% block content %}
 
     <h1>{{ p_title }}</h1>
-    {% if form.errors %}
-        <ul>
-            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-                {% for error in field_errors %}
-                    <li>{{ form[field_name].label}}: {{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <form method="POST" action="{{ url_for('main_bp.edit_page', title=p_title) }}">
+
+    <form method="POST" action="{{ url_for('main_bp.edit_page', id=page.id) }}">
         {{ form.csrf_token }}
-        <fieldset style="display: none">
+        <fieldset>
+            {{ form.title.label }} <br/>
             {{ form.title }}
+            {% if form.title.errors %}
+                <ul class="errors">
+                    {% for err in form.title.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </fieldset>
         <fieldset>
-            {{ form.content.label }} <br>
-            {{ form.content(style="width: 100%") }}
+            {{ form.public.label }} <br/>
+            {{ form.public }}
+            {% if form.public.errors %}
+                <ul class="errors">
+                    {% for err in form.public.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </fieldset>
+        <fieldset>
+            {{ form.text.label }} <br/>
+            {{ form.text }}
+            {% if form.text.errors %}
+                <ul class="errors">
+                    {% for err in form.text.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </fieldset>
 
         {{ form.submit }}
+
     </form>
 
 {% endblock %}
