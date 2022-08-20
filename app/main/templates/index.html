@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <p>Hello there!</p>
+
+    <h1>Recently Edited</h1>
+    {% for project in projects %}
+        <a href="{{ url_for('main_bp.show_project', userid=current_user.id, project_name=project.title) }}"
+        <a href="{{ url_for('main_bp.show_page_by_id', id=project.page_id) }}">
+            <div class="w3-card w3-container w3-padding-16 w3-margin-bottom">
+                <b>{{ project.title }}</b><br>
+            </div>
+        </a>
+    {% endfor %}
+{% endblock %}

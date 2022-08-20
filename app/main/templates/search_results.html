@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Search Results for "{{ search_term }}"</h1>
+
+    {% for page in results %}
+        <a href="{{ url_for("main_bp.show_page", title=page.title) }}">{{ page.title }}</a>
+    {% endfor %}
+{% endblock %}

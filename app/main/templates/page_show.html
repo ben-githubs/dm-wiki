@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1 style="margin-bottom: 0">{{ page.title }}</h1>
+    <a href="{{ url_for('main_bp.edit_page', title=page.title) }}">Edit</a>
+
+    <hr>
+    {{ page.text | markdown }}
+
+    <hr>
+    <i>Created on: {{ page.date_created }}</i> <br/>
+    <i>Last Modified: {{ page.date_modified or page.date_created }}</i>
+
+{% endblock %}

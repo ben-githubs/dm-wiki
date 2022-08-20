@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>{{ p_title }}</h1>
+    {% if form.errors %}
+        <ul>
+            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                {% for error in field_errors %}
+                    <li>{{ form[field_name].label}}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="POST" action="{{ url_for('main_bp.edit_page', title=p_title) }}">
+        {{ form.csrf_token }}
+        <fieldset style="display: none">
+            {{ form.title }}
+        </fieldset>
+        <fieldset>
+            {{ form.content.label }} <br>
+            {{ form.content(style="width: 100%") }}
+        </fieldset>
+
+        {{ form.submit }}
+    </form>
+
+{% endblock %}

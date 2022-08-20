@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ title if title is not none else 'DM Wiki' }}</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+    </head>
+    <body style="width: 100%">
+        <div class="w3-bar w3-blue" style="display:flex; align-items:center">
+            <a href="/" class="w3-bar-item w3-button">Home</a>
+            <a href="{{ url_for('main_bp.new_project', userid=current_user.id) }}" class="w3-bar-item w3-button">New Project</a>
+            <a href="{{ url_for('main_bp.new_page', userid=current_user.id, project=session['project]['title']) }}" class="w3-bar-item w3-button">New Page</a>
+            {% if current_user.is_authenticated %}
+                <a href="#" class="w3-bar-item w3-button">Logged in as {{ current_user['display_name'] }}</a>
+            {% else %}
+                <a href="{{ url_for('main_bp.login', next=request.host_url) }}" class="w3-bar-item w3-button">Sign In</a>
+            {% endif %}
+            <span class="w3-bar-item w3-right" style="align-self: flex-end">
+                <form method="POST" action="{{ url_for('main_bp.search') }}">
+                    <span>Search: </span>
+                    <input type="text" id="search_bar" name="search_bar"/>
+                </form>
+            </span>
+        </div>
+        <div id="content" class="w2-container" style="width: 100%; max-width: 1000px; margin: auto">
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

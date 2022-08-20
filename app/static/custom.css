@@ -1,0 +1,18 @@
+a {
+    text-decoration: none;
+}
+
+ul.errors {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    color:crimson;
+}
+
+fieldset {
+    border: 0;
+}
+
+textarea {
+    width: 100%
+}

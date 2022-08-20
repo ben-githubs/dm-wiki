@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form method="POST" action="#">
+        {{ form.csrf_token }}
+        <fieldset>
+            {{ form.path.label }} <br/>
+            {{ form.path }}
+            {% if form.path.errors %}
+                <ul class="errors">
+                    {% for err in form.path.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </fieldset>
+        <fieldset>
+            {{ form.title.label }} <br/>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <ul class="errors">
+                    {% for err in form.title.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </fieldset>
+        <fieldset>
+            {{ form.public.label }} <br/>
+            {{ form.public }}
+            {% if form.public.errors %}
+                <ul class="errors">
+                    {% for err in form.public.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </fieldset>
+        <fieldset>
+            {{ form.text.label }} <br/>
+            {{ form.text }}
+            {% if form.text.errors %}
+                <ul class="errors">
+                    {% for err in form.text.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </fieldset>
+
+        {{ form.submit }}
+
+    </form>
+
+{% endblock %}

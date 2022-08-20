@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1 style="margin-bottom: 0">{{ project.title }}</h1>
+    <a href="#">Edit</a>
+
+    {% for page in recent_pages %}
+        <a href="{{ url_for('main_bp.show_page_by_id', id=page.id) }}">
+            <div class="w3-card w3-container w3-padding-16 w3-margin-bottom">
+                <b>{{ page.title }}</b><br>
+                <span>{{ page.path }}</span>
+                <p>{{ page.content | markdown }}</p>
+            </div>
+        </a>
+    {% endfor %}
+
+{% endblock %}
