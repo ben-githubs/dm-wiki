@@ -9,7 +9,7 @@
         <div class="w3-bar w3-blue" style="display:flex; align-items:center">
             <a href="/" class="w3-bar-item w3-button">Home</a>
             <a href="{{ url_for('main_bp.new_project', userid=current_user.id) }}" class="w3-bar-item w3-button">New Project</a>
-            <a href="{{ url_for('main_bp.new_page', userid=current_user.id, project=session['project]['title']) }}" class="w3-bar-item w3-button">New Page</a>
+            <a href="{{ url_for('main_bp.new_page', userid=current_user.id, project=session['project']['title']) }}" class="w3-bar-item w3-button">New Page</a>
             {% if current_user.is_authenticated %}
                 <a href="#" class="w3-bar-item w3-button">Logged in as {{ current_user['display_name'] }}</a>
             {% else %}

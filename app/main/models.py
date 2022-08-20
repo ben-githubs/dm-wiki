@@ -49,6 +49,8 @@ class Page(db.Model):
 
     parent_id = db.Column(db.Integer, ForeignKey('pages.id'))
     parent = db.relationship("Page", backref=db.backref("children"), remote_side=[id], single_parent=True, cascade="all, delete-orphan",)
+
+    project_id = db.Column(db.Integer, ForeignKey('projects.id'), index=True, nullable=False)
     
     __ts_vector__ = db.Column(TSVector(), db.Computed("to_tsvector('english', title || ' ' || text)", persisted=True))
     __table_args__ = (Index('ix_video___ts_vector__', __ts_vector__, postgresql_using='gin'),)

@@ -71,7 +71,7 @@ def create_page(db, userid, proj, path, title, public=True, text=''):
         this_page = get_child_page_by_title(parent, parts[i])
         # Create this page if necessary
         if not this_page:
-            this_page = Page(title=parts[i], public=public, owner_id=userid, text=text_arr[i], parent=parent)
+            this_page = Page(title=parts[i], public=public, owner_id=userid, text=text_arr[i], parent=parent, project_id=proj.id)
             db.session.add(this_page)
             db.session.commit()
             if i == len(parts)-1: page_created = True

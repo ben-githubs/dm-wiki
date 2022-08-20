@@ -1,3 +1,5 @@
+import re
+
 from markdown import markdown as _markdown
 from jinja2.filters import do_mark_safe
 

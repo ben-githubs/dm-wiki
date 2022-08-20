@@ -2,6 +2,7 @@ from datetime import datetime
 from os import environ
 from flask_login import login_required, current_user
 import requests
+import re
 
 from flask import abort, Blueprint, json, flash, render_template, redirect, request, session, url_for
 from flask import current_app as app
@@ -119,6 +120,10 @@ def new_page(userid, project):
 
     form = forms.Page()
     if form.validate_on_submit():
+        # Validate and alter the body text
+        text = sanitize_links(project, form.text.data)
+        print(text)
+        # Create page
         page = create_page(
             db,
             userid,
@@ -126,7 +131,7 @@ def new_page(userid, project):
             form.path.data,
             form.title.data,
             form.public.data,
-            form.text.data
+            text
         )
         # If page is False, then there was already an article at that path
         if not page:
@@ -244,3 +249,22 @@ def set_project(p):
         'date_modified': p.date_modified,
     }
     print(session['project']['title'])
+
+'''
+Accepts Markdown text and looks for link targets starting with "page:", then converts them to links starting with "id:".
+'''
+def sanitize_links(project, text):
+    def replace(match):
+        assert len(match.groups()) > 0
+        arg = match.group(1)
+        # If just a title, find the first corresponding page
+        if r'/' not in arg:
+            page = m.Page.query.filter_by(project_id=project.id, title=arg).first()
+            assert page
+        # Else get the id from the path
+        else:
+            page = get_page_by_abs_path(project, arg)
+            assert page
+        return f'(show_page_by_id/{page.id})'
+    pattern = re.compile(r'\(page\:(.*?)\)')
+    return pattern.sub(replace, text)
