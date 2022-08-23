@@ -93,6 +93,23 @@ def get_path_from_id(page_id):
     assert project, f"Page <{page.id}> has no project!"
     return title_to_url(project.title), '/'.join(path[1:]) # path[0] is project name
 
+"""
+Returns a tree structure of all pages.
+"""
+def get_project_tree(project):
+    all_pages = Page.query.filter_by(project_id = project.id).all()
+    # Get root page
+    root = [p for p in all_pages if not p.parent_id][0]
+    def page_to_dict(page):
+        data = {
+            'id': page.id,
+            'title': page.title,
+            'children': [page_to_dict(p) for p in all_pages if p.parent_id == page.id]
+        }
+        return data
+    return page_to_dict(root)
+
+
 
 
 

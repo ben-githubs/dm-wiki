@@ -9,7 +9,7 @@ from flask import current_app as app
 from markdown import markdown
 from sqlalchemy import func, desc
 
-from .model_help import create_page, get_page_by_abs_path, get_path_from_id, get_project_by_title, get_projects_by_owner, url_to_title
+from .model_help import create_page, get_page_by_abs_path, get_path_from_id, get_project_by_title, get_project_tree, get_projects_by_owner, url_to_title
 
 from . import forms
 from . import models as m
@@ -182,6 +182,7 @@ def show_page(userid, project_name, path):
     if not project:
         return abort(404)
     set_project(project)
+    tree = get_project_tree(project)
     print(path)
     page = get_page_by_abs_path(project, path)
     # Display error if page not found or is private and we're not the owner
@@ -190,6 +191,7 @@ def show_page(userid, project_name, path):
     return render_template('page_show.html',
         title=page.title,
         page = page,
+        pages = tree
     )
 
 @main_bp.route('/<int:userid>/<project_name>/show/', methods=['GET'])

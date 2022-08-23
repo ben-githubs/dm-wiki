@@ -4,9 +4,11 @@
         <title>{{ title if title is not none else 'DM Wiki' }}</title>
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+        <script src="https://kit.fontawesome.com/997e16441a.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
     <body style="width: 100%">
-        <div class="w3-bar w3-blue" style="display:flex; align-items:center">
+        <div class="w3-sidebar w3-bar-block w3-animate-left w3-indigo" style="display: none" id="sidebar">
             <a href="/" class="w3-bar-item w3-button">Home</a>
             <a href="{{ url_for('main_bp.new_project', userid=current_user.id) }}" class="w3-bar-item w3-button">New Project</a>
             <a href="{{ url_for('main_bp.new_page', userid=current_user.id, project=session['project']['title']) }}" class="w3-bar-item w3-button">New Page</a>
@@ -15,15 +17,81 @@
             {% else %}
                 <a href="{{ url_for('main_bp.login', next=request.host_url) }}" class="w3-bar-item w3-button">Sign In</a>
             {% endif %}
-            <span class="w3-bar-item w3-right" style="align-self: flex-end">
-                <form method="POST" action="{{ url_for('main_bp.search') }}">
-                    <span>Search: </span>
-                    <input type="text" id="search_bar" name="search_bar"/>
-                </form>
-            </span>
+
+            {% if pages is defined %}
+                {% for p in pages['children'] recursive %}
+                    {% set children = p['children'] is defined and p['children'] %}
+                    <a class="w3-bar-item w3-button"
+                       id="page-{{p['id']}}"
+                       ondblclick="link(this)"
+                       onclick="{% if children %}accordian('page-{{ p['id'] }}-children'){% endif %}"
+                       href="{{ url_for('main_bp.show_page_by_id', id=p['id']) }}">
+                        {% if children %}<i class="fas fa-caret-right"></i>{% endif %} {{ p['title'] }}
+                    </a>
+                    {% if children %}
+                        <div id="page-{{p['id']}}-children" class="" style="display: none; padding-left: 10px;">
+                            {{ loop(p['children']) }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            
         </div>
-        <div id="content" class="w2-container" style="width: 100%; max-width: 1000px; margin: auto">
-            {% block content %}{% endblock %}
+        <div id="main">
+            <div class="w3-bar w3-blue" style="display:flex; align-items:center">
+                <a class="w3-bar-item w3-button" onclick="sidebar_toggle()"><i class="fas fa-bars"></i></a>
+                <a href="/" class="w3-bar-item w3-button">Home</a>
+                <a href="{{ url_for('main_bp.new_project', userid=current_user.id) }}" class="w3-bar-item w3-button">New Project</a>
+                <a href="{{ url_for('main_bp.new_page', userid=current_user.id, project=session['project']['title']) }}" class="w3-bar-item w3-button">New Page</a>
+                {% if current_user.is_authenticated %}
+                    <a href="#" class="w3-bar-item w3-button">Logged in as {{ current_user['display_name'] }}</a>
+                {% else %}
+                    <a href="{{ url_for('main_bp.login', next=request.host_url) }}" class="w3-bar-item w3-button">Sign In</a>
+                {% endif %}
+                <span class="w3-bar-item w3-right" style="align-self: flex-end">
+                    <form method="POST" action="{{ url_for('main_bp.search') }}">
+                        <span>Search: </span>
+                        <input type="text" id="search_bar" name="search_bar"/>
+                    </form>
+                </span>
+            </div>
+            <div id="content" class="w2-container" style="width: 100%; max-width: 1000px; margin: auto">
+                {% block content %}{% endblock %}
+            </div>
         </div>
+
+        <script>
+            function sidebar_toggle() {
+                sidebar = $('#sidebar');
+                main = $('#main');
+                bar_width = '300px';
+                if (sidebar.css('display') == 'none') {
+                    sidebar.css('display', 'block');
+                    sidebar.css('width', bar_width);
+                    main.css('margin-left', bar_width);
+                } else {
+                    sidebar.css('display', 'none');
+                    main.css('margin-left', '0');
+                }
+            }
+
+            function accordian(id) {
+                console.log(`#${id}`);
+                elem = $(`#${id}`);
+                console.log(elem);
+                if (elem.css('display') != 'block') {
+                    elem.css('display', 'block');
+                } else {
+                    elem.css('display', 'none');
+                }
+            }
+
+            function link(elem) {
+                window.location = elem.href;
+            }
+
+            {% block scripts %}{% endblock %}
+        </script>
+
     </body>
 </html>
